@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Bank.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bank.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class CustomersController : Controller
     {
