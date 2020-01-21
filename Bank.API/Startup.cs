@@ -2,6 +2,7 @@ using Bank.API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,8 @@ namespace Bank.API
 {
     public class Startup
     {
+        public static readonly InMemoryDatabaseRoot InMemoryDatabaseRoot = new InMemoryDatabaseRoot();
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -20,7 +23,8 @@ namespace Bank.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<BankContext>(options => options.UseInMemoryDatabase("BankingDb"));
+            services
+                .AddDbContext<BankContext>(options => options.UseInMemoryDatabase("BankingDb", InMemoryDatabaseRoot));
 
             services.AddControllers();
         }

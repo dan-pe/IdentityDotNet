@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Bank.API.Models;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Bank.API.Controllers
 {
@@ -25,23 +25,43 @@ namespace Bank.API.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetCustomer([FromRoute]long id)
         {
             return Ok(ctx.Customers.Find(id));
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]Customer customer)
+        public async Task<IActionResult> CreateCustomer([FromBody]Customer customer)
         {
-            ctx.Customers.Add(customer);
+            await ctx.Customers.AddAsync(customer);
+            ctx.SaveChanges();
+
+            return Ok(customer);
+        }
+
+        // PUT api/<controller>/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCustomer([FromRoute]long id, [FromBody]Customer updatedCustomer)
+        {
+
+            if (ctx.Customers.Any(c => c.Id.Equals(id)))
+            {
+                var customer = ctx.Customers.Find(id);
+                customer.FirstName = updatedCustomer.FirstName;
+                customer.LastName = updatedCustomer.LastName;
+                await ctx.SaveChangesAsync();
+            }
+
+            return Ok(updatedCustomer);
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(long id)
+        public void DeleteCustomer([FromRoute]long id)
         {
             ctx.Customers.Remove(ctx.Customers.Find(id));
+            ctx.SaveChanges();
         }
     }
 }
