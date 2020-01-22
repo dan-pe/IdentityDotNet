@@ -27,7 +27,7 @@ namespace Bank.API
             {
                 options.Authority = "http://localhost:5000";
                 options.RequireHttpsMetadata = false;
-                options.ApiName = "BankApi";
+                options.ApiName = "bankApi";
             });
 
             services.AddDbContext<BankContext>(options => 
@@ -49,6 +49,8 @@ namespace Bank.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
