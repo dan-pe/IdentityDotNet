@@ -14,6 +14,44 @@ namespace Bank.ConsoleClient
 
         private static async Task MainAsync()
         {
+            await ResourcePassowrdAuth();
+
+            await ClientCredentialsAuth();
+
+            Console.ReadKey();
+        }
+
+        private static async Task ResourcePassowrdAuth()
+        {
+            var client = new HttpClient();
+            var discoveryRO = await client.GetDiscoveryDocumentAsync("http://localhost:5000");
+
+            var response = await client.RequestTokenAsync(new TokenRequest
+            {
+                Address = discoveryRO.TokenEndpoint,
+                ClientId = "ro.client",
+                ClientSecret = "secret",
+
+                Parameters =
+                {
+                    { "scope", "bankApi" },
+                    { "grant_type", "password" },
+                    { "username", "John" },
+                    { "password", "password" }
+                }
+            });
+
+            if (response.IsError)
+            {
+                Console.WriteLine(response.Error);
+                return;
+            }
+
+            Console.WriteLine($"Password based token: {response.AccessToken}");
+        }
+
+        private static async Task ClientCredentialsAuth()
+        {
             // Discover endpoints using metadata of Identity Server
             var discoveryClient = new HttpClient();
 
@@ -65,8 +103,6 @@ namespace Bank.ConsoleClient
             var content = await getAllCustomersReponse.Content.ReadAsStringAsync();
 
             Console.WriteLine(JArray.Parse(content));
-
-            Console.ReadKey();
         }
     }
 }
